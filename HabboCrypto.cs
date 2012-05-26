@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using JCryptology.Utils;
-using JCryptology.Utils.Encryption;
+using JCryptology.Encryption;
 
 namespace JCryptology
 {
