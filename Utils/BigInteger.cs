@@ -140,7 +140,7 @@ namespace JCryptology.Utils
         // maximum length of the BigInteger in uint (4 bytes)
         // change this to suit the required level of precision.
 
-        private const int maxLength = 70;
+        private const int maxLength = 200;
 
         // primes smaller than 2000 to test the generated prime number
 
@@ -1549,6 +1549,56 @@ namespace JCryptology.Utils
             return result;
         }
 
+
+        //***********************************************************************
+        // Exponentiation
+        //***********************************************************************
+
+        public BigInteger Pow(BigInteger exp)
+        {
+            bool isneg = false;
+            if (exp < 0)
+            {
+                exp = exp * -1 + 1;
+
+                isneg = true;
+            }
+
+            BigInteger res = new BigInteger(1);
+            if (exp == 0)
+            {
+                return res;
+            }
+
+            BigInteger org = new BigInteger(this);
+            BigInteger factor = new BigInteger(this);
+
+            while (exp > 0)
+            {
+                if (exp % 2 == 1)
+                {
+                    res *= factor;
+                }
+
+                exp /= 2;
+
+                if (exp > 0)
+                {
+                    factor *= factor;
+                }
+            }
+
+            if (isneg)
+            {
+                Console.WriteLine("{0} / {1}", org, res);
+
+                res = org / res;
+
+                Console.WriteLine(res);
+            }
+
+            return res;
+        }
 
 
         //***********************************************************************

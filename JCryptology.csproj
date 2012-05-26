@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Encryption\DSA.cs" />
     <Compile Include="HabboCrypto.cs" />
     <Compile Include="JEncryption\Elec2WayEnc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
