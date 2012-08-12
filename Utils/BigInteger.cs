@@ -132,7 +132,7 @@
 
 using System;
 
-namespace JCryptology.Utils
+namespace HabboEncryption.Utils
 {
 
     public class BigInteger

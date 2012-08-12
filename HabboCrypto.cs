@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using JCryptology.Utils;
-using JCryptology.Encryption;
+using HabboEncryption.Utils;
+using HabboEncryption.Encryption;
 
-namespace JCryptology
+namespace HabboEncryption
 {
     public class HabboCrypto
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JCryptology.Encryption
+namespace HabboEncryption.Encryption
 {
     public class RC4
     {

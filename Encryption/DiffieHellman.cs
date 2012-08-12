@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using JCryptology.Utils;
+using HabboEncryption.Utils;
 
-namespace JCryptology.Encryption
+namespace HabboEncryption.Encryption
 {
     public class DiffieHellman
     {
