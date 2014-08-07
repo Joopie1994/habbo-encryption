@@ -13,7 +13,7 @@ For the initialization for the crypto event is the packet: string, string
 
 ```
   response.WriteString(HabboEncryptionHandlerV2.GetRsaDiffieHellmanPrimeKey());
-  response.WriteString(HabboEncryptionHandlerV2.GetRsaDiffieHellmanPrimeKey());
+  response.WriteString(HabboEncryptionHandlerV2.GetRsaDiffieHellmanGeneratorKey());
 ```
 
 And for the last message event which you get after sending the initialization packet is
@@ -29,4 +29,7 @@ And for the last message event which you get after sending the initialization pa
   {
     // throw a error
   }
+  
+  // Initialize a new response
+  response.WriteString(HabboEncryptionHandlerV2.GetRsaDiffieHellmanPublicKey());
 ```
