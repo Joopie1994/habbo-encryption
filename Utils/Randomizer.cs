@@ -1,11 +1,11 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace HabboEncryption.Utils
 {
-    public class Randomize
+    public class Randomizer
     {
         private static Random rand = new Random();
 
@@ -35,6 +35,23 @@ namespace HabboEncryption.Utils
         public static double NextDouble()
         {
             return rand.NextDouble();
+        }
+
+        public static byte NextByte()
+        {
+            return (byte)Next(0, 255);
+        }
+
+        public static byte NextByte(int max)
+        {
+            max = Math.Min(max, 255);
+            return (byte)Next(0, max);
+        }
+
+        public static byte NextByte(int min, int max)
+        {
+            max = Math.Min(max, 255);
+            return (byte)Next(Math.Min(min, max), max);
         }
 
         public static void NextBytes(byte[] toparse)
