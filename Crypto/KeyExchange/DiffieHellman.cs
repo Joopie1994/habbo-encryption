@@ -64,7 +64,7 @@ namespace HabboEncryption.Crypto.KeyExchange
 
                 this.PublicKey = this.Generator.modPow(this.PrivateKey, this.Prime);
 
-                if (ignoreBaseKeys)
+                if (!ignoreBaseKeys)
                 {
                     break;
                 }
