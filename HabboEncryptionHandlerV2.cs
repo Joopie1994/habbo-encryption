@@ -17,10 +17,18 @@ namespace HabboEncryption
         public static RsaKey Rsa;
         public static DiffieHellman DiffieHellman;
 
+        public static string RsaDiffieHellmanPrimeKey { get; private set; }
+        public static string RsaDiffieHellmanGeneratorKey { get; private set; }
+        public static string RsaDiffieHellmanPublicKey { get; private set; }
+
         public static void Initialize(RsaKeyHolder rsaKeys, DiffieHellmanKeyHolder dhKeys)
         {
             Rsa = RsaKey.ParsePrivateKey(rsaKeys.N, rsaKeys.E, rsaKeys.D);
-            DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.Prime, dhKeys.Generator);
+            DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.P, dhKeys.G);
+
+            InitRsaDiffieHellmanPrimeKey();
+            InitRsaDiffieHellmanGeneratorKey();
+            InitRsaDiffieHellmanPublicKey();
         }
 
         private static string GetRsaStringEncrypted(string message)
@@ -38,22 +46,22 @@ namespace HabboEncryption
             }
         }
 
-        public static string GetRsaDiffieHellmanPrimeKey()
+        private static void InitRsaDiffieHellmanPrimeKey()
         {
-            string key = DiffieHellman.Prime.ToString("D");
-            return GetRsaStringEncrypted(key);
+            string key = DiffieHellman.Prime.ToString();
+            RsaDiffieHellmanPrimeKey = GetRsaStringEncrypted(key);
         }
 
-        public static string GetRsaDiffieHellmanGeneratorKey()
+        private static void InitRsaDiffieHellmanGeneratorKey()
         {
-            string key = DiffieHellman.Generator.ToString("D");
-            return GetRsaStringEncrypted(key);
+            string key = DiffieHellman.Generator.ToString();
+            RsaDiffieHellmanGeneratorKey = GetRsaStringEncrypted(key);
         }
 
-        public static string GetRsaDiffieHellmanPublicKey()
+        private static void InitRsaDiffieHellmanPublicKey()
         {
-            string key = DiffieHellman.PublicKey.ToString("D");
-            return GetRsaStringEncrypted(key);
+            string key = DiffieHellman.PublicKey.ToString();
+            RsaDiffieHellmanPublicKey = GetRsaStringEncrypted(key);
         }
 
         public static BigInteger CalculateDiffieHellmanSharedKey(string publicKey)
