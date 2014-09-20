@@ -1,5 +1,4 @@
-﻿using HabboEncryption.CodeProject.Utils;
-using HabboEncryption.Crypto.KeyExchange;
+﻿using HabboEncryption.Crypto.KeyExchange;
 using HabboEncryption.Hurlant.Crypto.Rsa;
 using HabboEncryption.Keys;
 using HabboEncryption.Utils;
@@ -8,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
+using System.Globalization;
 
 namespace HabboEncryption
 {
@@ -16,10 +17,10 @@ namespace HabboEncryption
         public static RsaKey Rsa;
         public static DiffieHellman DiffieHellman;
 
-        public static void Initialize(RsaKeyHolder keys)
+        public static void Initialize(RsaKeyHolder rsaKeys, DiffieHellmanKeyHolder dhKeys)
         {
-            Rsa = RsaKey.ParsePrivateKey(keys.N, keys.E, keys.D);
-            DiffieHellman = new DiffieHellman();
+            Rsa = RsaKey.ParsePrivateKey(rsaKeys.N, rsaKeys.E, rsaKeys.D);
+            DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.Prime, dhKeys.Generator);
         }
 
         private static string GetRsaStringEncrypted(string message)
@@ -39,19 +40,19 @@ namespace HabboEncryption
 
         public static string GetRsaDiffieHellmanPrimeKey()
         {
-            string key = DiffieHellman.Prime.ToString(10);
+            string key = DiffieHellman.Prime.ToString("D");
             return GetRsaStringEncrypted(key);
         }
 
         public static string GetRsaDiffieHellmanGeneratorKey()
         {
-            string key = DiffieHellman.Generator.ToString(10);
+            string key = DiffieHellman.Generator.ToString("D");
             return GetRsaStringEncrypted(key);
         }
 
         public static string GetRsaDiffieHellmanPublicKey()
         {
-            string key = DiffieHellman.PublicKey.ToString(10);
+            string key = DiffieHellman.PublicKey.ToString("D");
             return GetRsaStringEncrypted(key);
         }
 
@@ -62,7 +63,7 @@ namespace HabboEncryption
                 byte[] cbytes = Converter.HexStringToBytes(publicKey);
                 byte[] publicKeyBytes = Rsa.Verify(cbytes);
                 string publicKeyString = Encoding.Default.GetString(publicKeyBytes);
-                return DiffieHellman.CalculateSharedKey(new BigInteger(publicKeyString, 10));
+                return DiffieHellman.CalculateSharedKey(BigInteger.Parse(publicKeyString));
             }
             catch
             {

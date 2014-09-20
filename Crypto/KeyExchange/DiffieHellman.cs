@@ -1,10 +1,11 @@
-﻿using HabboEncryption.CodeProject.Utils;
-using HabboEncryption.Utils;
+﻿using HabboEncryption.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
+using System.Globalization;
 
 namespace HabboEncryption.Crypto.KeyExchange
 {
@@ -18,62 +19,41 @@ namespace HabboEncryption.Crypto.KeyExchange
         private BigInteger PrivateKey;
         public BigInteger PublicKey { get; private set; }
 
-        public DiffieHellman()
-        {
-            this.Initialize();
-        }
-
-        public DiffieHellman(int b)
-        {
-            this.BITLENGTH = b;
-
-            this.Initialize();
-        }
-
         public DiffieHellman(BigInteger prime, BigInteger generator)
         {
             this.Prime = prime;
             this.Generator = generator;
+            this.BITLENGTH = this.Prime.GetBitCount();
 
-            this.Initialize(true);
+            this.Initialize();
         }
 
-        private void Initialize(bool ignoreBaseKeys = false)
+        private void Initialize()
         {
             this.PublicKey = 0;
 
-            Random rand = new Random();
-            while (this.PublicKey == 0)
+            byte[] bytes = new byte[this.BITLENGTH / 8];
+            Randomizer.NextBytes(bytes);
+            this.PrivateKey = new BigInteger(bytes);
+
+            if (this.Generator > this.Prime)
             {
-                if (!ignoreBaseKeys)
-                {
-                    this.Prime = BigInteger.genPseudoPrime(BITLENGTH, 10, rand);
-                    this.Generator = BigInteger.genPseudoPrime(BITLENGTH, 10, rand);
-                }
-
-                byte[] bytes = new byte[this.BITLENGTH / 8];
-                Randomizer.NextBytes(bytes);
-                this.PrivateKey = new BigInteger(bytes);
-
-                if (this.Generator > this.Prime)
-                {
-                    BigInteger temp = this.Prime;
-                    this.Prime = this.Generator;
-                    this.Generator = temp;
-                }
-
-                this.PublicKey = this.Generator.modPow(this.PrivateKey, this.Prime);
-
-                if (!ignoreBaseKeys)
-                {
-                    break;
-                }
+                BigInteger temp = this.Prime;
+                this.Prime = this.Generator;
+                this.Generator = temp;
             }
+
+            this.PublicKey = BigInteger.ModPow(this.Generator, this.PrivateKey, this.Prime);
+        }
+
+        public static DiffieHellman ParsePublicKey(string prime, string generator)
+        {
+            return new DiffieHellman(BigInteger.Parse(prime, NumberStyles.AllowHexSpecifier), BigInteger.Parse(generator, NumberStyles.AllowHexSpecifier));
         }
 
         public BigInteger CalculateSharedKey(BigInteger m)
         {
-            return m.modPow(this.PrivateKey, this.Prime);
+            return BigInteger.ModPow(m, this.PrivateKey, this.Prime);
         }
     }
 }
