@@ -45,7 +45,7 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
         public static RsaKey ParsePublicKey(string n, string e)
         {
             return new RsaKey(
-                BigInteger.Parse(n, NumberStyles.AllowHexSpecifier), Convert.ToInt32(e, 16),
+                BigInteger.Parse(n), Convert.ToInt32(e, 10),
                 0, 0, 0, 0, 0, 0
                 );
         }
@@ -59,8 +59,8 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
             if (p == null)
             {
                 return new RsaKey(
-                    BigInteger.Parse(n, NumberStyles.AllowHexSpecifier), Convert.ToInt32(e, 16),
-                    BigInteger.Parse(d, NumberStyles.AllowHexSpecifier),
+                    BigInteger.Parse(n), Convert.ToInt32(e, 10),
+                    BigInteger.Parse(d),
                     0, 0,
                     0, 0,
                     0);
@@ -68,11 +68,11 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
             else
             {
                 return new RsaKey(
-                    BigInteger.Parse(n, NumberStyles.AllowHexSpecifier), Convert.ToInt32(e, 16),
-                    BigInteger.Parse(d, NumberStyles.AllowHexSpecifier),
-                    BigInteger.Parse(p, NumberStyles.AllowHexSpecifier), BigInteger.Parse(q, NumberStyles.AllowHexSpecifier),
-                    BigInteger.Parse(dmp1, NumberStyles.AllowHexSpecifier), BigInteger.Parse(dmq1, NumberStyles.AllowHexSpecifier),
-                    BigInteger.Parse(coeff, NumberStyles.AllowHexSpecifier));
+                    BigInteger.Parse(n), Convert.ToInt32(e, 10),
+                    BigInteger.Parse(d),
+                    BigInteger.Parse(p), BigInteger.Parse(q),
+                    BigInteger.Parse(dmp1), BigInteger.Parse(dmq1),
+                    BigInteger.Parse(coeff));
             }
         }
 

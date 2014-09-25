@@ -49,7 +49,7 @@ namespace HabboEncryption
         public HabboEncryptionHandlerV1(RsaKeyHolder rsaKeys, DiffieHellmanKeyHolder dhKeys)
         {
             this.Rsa = RsaKey.ParsePrivateKey(rsaKeys.N, rsaKeys.E, rsaKeys.D);
-            this.DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.Prime, dhKeys.Generator);
+            this.DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.P, dhKeys.G);
 
             this.Rc4 = new ARC4();
 

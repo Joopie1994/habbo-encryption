@@ -24,7 +24,7 @@ namespace HabboEncryption
         public static void Initialize(RsaKeyHolder rsaKeys, DiffieHellmanKeyHolder dhKeys)
         {
             Rsa = RsaKey.ParsePrivateKey(rsaKeys.N, rsaKeys.E, rsaKeys.D);
-            DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.P, dhKeys.G);
+            DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.Bits, dhKeys.P, dhKeys.G);
 
             InitRsaDiffieHellmanPrimeKey();
             InitRsaDiffieHellmanGeneratorKey();

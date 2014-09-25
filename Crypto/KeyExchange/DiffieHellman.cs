@@ -11,7 +11,7 @@ namespace HabboEncryption.Crypto.KeyExchange
 {
     public class DiffieHellman
     {
-        public readonly int BITLENGTH = 32;
+        public int Bits { get; private set; }
 
         public BigInteger Prime { get; private set; }
         public BigInteger Generator { get; private set; }
@@ -21,9 +21,18 @@ namespace HabboEncryption.Crypto.KeyExchange
 
         public DiffieHellman(BigInteger prime, BigInteger generator)
         {
+            this.Bits = 32;
             this.Prime = prime;
             this.Generator = generator;
-            this.BITLENGTH = this.Prime.GetBitCount();
+
+            this.Initialize();
+        }
+
+        public DiffieHellman(int bits, BigInteger prime, BigInteger generator)
+        {
+            this.Bits = bits;
+            this.Prime = prime;
+            this.Generator = generator;
 
             this.Initialize();
         }
@@ -32,23 +41,21 @@ namespace HabboEncryption.Crypto.KeyExchange
         {
             this.PublicKey = 0;
 
-            byte[] bytes = new byte[this.BITLENGTH / 8];
+            byte[] bytes = new byte[this.Bits / 8];
             Randomizer.NextBytes(bytes);
-            this.PrivateKey = new BigInteger(bytes);
-
-            if (this.Generator > this.Prime)
-            {
-                BigInteger temp = this.Prime;
-                this.Prime = this.Generator;
-                this.Generator = temp;
-            }
+            this.PrivateKey = BigInteger.Abs(new BigInteger(bytes));
 
             this.PublicKey = BigInteger.ModPow(this.Generator, this.PrivateKey, this.Prime);
         }
 
         public static DiffieHellman ParsePublicKey(string prime, string generator)
         {
-            return new DiffieHellman(BigInteger.Parse(prime, NumberStyles.AllowHexSpecifier), BigInteger.Parse(generator, NumberStyles.AllowHexSpecifier));
+            return new DiffieHellman(BigInteger.Parse(prime), BigInteger.Parse(generator));
+        }
+
+        public static DiffieHellman ParsePublicKey(int bits, string prime, string generator)
+        {
+            return new DiffieHellman(bits, BigInteger.Parse(prime), BigInteger.Parse(generator));
         }
 
         public BigInteger CalculateSharedKey(BigInteger m)
