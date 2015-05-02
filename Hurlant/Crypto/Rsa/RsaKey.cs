@@ -87,7 +87,7 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
 
         public byte[] Decrypt(byte[] src) 
         {
-            return this.DoDecrypt(new DoCalculateionDelegate(this.DoPublic), src, Pkcs1PadType.FullByte);
+            return this.DoDecrypt(new DoCalculateionDelegate(this.DoPrivate), src, Pkcs1PadType.FullByte);
         }
 
         public byte[] Sign(byte[] src)
@@ -97,7 +97,7 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
 
         public byte[] Verify(byte[] src)
         {
-            return this.DoDecrypt(new DoCalculateionDelegate(this.DoPrivate), src, Pkcs1PadType.FullByte);
+            return this.DoDecrypt(new DoCalculateionDelegate(this.DoPublic), src, Pkcs1PadType.FullByte);
         }
 
         private byte[] DoEncrypt(DoCalculateionDelegate method, byte[] src, Pkcs1PadType type)
