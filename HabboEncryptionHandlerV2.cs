@@ -60,7 +60,7 @@ namespace HabboEncryption
             try
             {
                 byte[] cbytes = Converter.HexStringToBytes(publicKey);
-                byte[] publicKeyBytes = Rsa.Verify(cbytes);
+                byte[] publicKeyBytes = Rsa.Decrypt(cbytes);
                 string publicKeyString = Encoding.Default.GetString(publicKeyBytes);
                 return DiffieHellman.CalculateSharedKey(new BigInteger(publicKeyString, 10));
             }
