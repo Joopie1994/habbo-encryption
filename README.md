@@ -5,20 +5,25 @@ For the latest Habbo version use the HabboEncryptionHandlerV2 class.
 To initialize the Encryption handler V2. Put this in your main class somewhere
 
 ```
-  RsaKeyHolder keys = new RsaKeyHolder();
-  HabboEncryptionHandlerV2.Initialize(keys);
+  RsaKeyHolder rsaKeys = new RsaKeyHolder();
+  DiffieHellmanKeyHolder dhKeys = new DiffieHellmanKeyHolder();
+  HabboEncryptionHandlerV2.Initialize(rsaKeys, dhKeys);
 ```
 
 For the initialization for the crypto event is the packet: string, string
 
 ```
-  response.WriteString(HabboEncryptionHandlerV2.GetRsaDiffieHellmanPrimeKey());
-  response.WriteString(HabboEncryptionHandlerV2.GetRsaDiffieHellmanGeneratorKey());
+  response.WriteString(HabboEncryptionHandlerV2.RsaDiffieHellmanPrimeKey);
+  response.WriteString(HabboEncryptionHandlerV2.RsaDiffieHellmanGeneratorKey);
 ```
 
 And for the last message event which you get after sending the initialization packet is
 
 ```
+  using System.Numerics;
+  
+  ...
+
   string cipherPublicKey = request.ReadString();
   BigInteger sharedKey = HabboEncryptionHandlerV2.CalculateDiffieHellmanSharedKey(cipherPublicKey);
   if (sharedKey != 0)
@@ -31,5 +36,5 @@ And for the last message event which you get after sending the initialization pa
   }
   
   // Initialize a new response
-  response.WriteString(HabboEncryptionHandlerV2.GetRsaDiffieHellmanPublicKey());
+  response.WriteString(HabboEncryptionHandlerV2.RsaDiffieHellmanPublicKey);
 ```

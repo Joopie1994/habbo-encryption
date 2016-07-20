@@ -1,10 +1,11 @@
-﻿using HabboEncryption.CodeProject.Utils;
-using HabboEncryption.Utils;
+﻿using HabboEncryption.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
+using System.Globalization;
 
 namespace HabboEncryption.Hurlant.Crypto.Rsa
 {
@@ -37,14 +38,14 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
             this.Dmq1 = dmq1;
             this.Coeff = coeff;
 
-            this.CanEncrypt = (this.N != 0 && this.E != 0);
-            this.CanDecrypt = (this.CanEncrypt && this.D != 0);
+            this.CanEncrypt = (this.N != null && this.E != 0);
+            this.CanDecrypt = (this.CanEncrypt && this.D != null);
         }
 
         public static RsaKey ParsePublicKey(string n, string e)
         {
             return new RsaKey(
-                new BigInteger(n, 16), Convert.ToInt32(e, 16),
+                BigInteger.Parse(n), Convert.ToInt32(e, 10),
                 0, 0, 0, 0, 0, 0
                 );
         }
@@ -58,8 +59,8 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
             if (p == null)
             {
                 return new RsaKey(
-                    new BigInteger(n, 16), Convert.ToInt32(e, 16),
-                    new BigInteger(d, 16),
+                    BigInteger.Parse(n), Convert.ToInt32(e, 10),
+                    BigInteger.Parse(d),
                     0, 0,
                     0, 0,
                     0);
@@ -67,17 +68,17 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
             else
             {
                 return new RsaKey(
-                    new BigInteger(n, 16), Convert.ToInt32(e, 16),
-                    new BigInteger(d, 16),
-                    new BigInteger(p, 16), new BigInteger(q, 16),
-                    new BigInteger(dmp1, 16), new BigInteger(dmq1, 16),
-                    new BigInteger(coeff, 16));
+                    BigInteger.Parse(n), Convert.ToInt32(e, 10),
+                    BigInteger.Parse(d),
+                    BigInteger.Parse(p), BigInteger.Parse(q),
+                    BigInteger.Parse(dmp1), BigInteger.Parse(dmq1),
+                    BigInteger.Parse(coeff));
             }
         }
 
         public int GetBlockSize()
         {
-            return (this.N.bitCount() + 7) / 8;
+            return (this.N.GetBitCount() + 7) / 8;
         }
 
         public byte[] Encrypt(byte[] src)
@@ -110,19 +111,25 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
                 BigInteger m = new BigInteger(paddedBytes);
                 if (m == 0)
                 {
+                    //Console.WriteLine("RSA Encrypt m == 0");
+                    
                     return null;
                 }
 
                 BigInteger c = method(m);
                 if (c == 0)
                 {
+                    //Console.WriteLine("RSA Encrypt c == 0");
+                    
                     return null;
                 }
 
-                return c.getBytes();
+                return c.ToByteArray();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
+
                 return null;
             }
         }
@@ -135,17 +142,28 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
                 BigInteger m = method(c);
                 if (m == 0)
                 {
+                    //Console.WriteLine("RSA Decrypt m == 0");
+                    
                     return null;
                 }
 
                 int bl = this.GetBlockSize();
 
-                byte[] bytes = this.pkcs1unpad(m.getBytes(), bl, type);
+                byte[] bytes = this.pkcs1unpad(m.ToByteArray(), bl, type);
+
+                if (bytes == null)
+                {
+                    //Console.WriteLine("RSA Decrypt bytes == null");
+
+                    return null;
+                }
 
                 return bytes;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
+
                 return null;
             }
         }
@@ -188,6 +206,7 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
             if (src.Length - i != n - 1 || src[i] > 2)
             {
                 Console.WriteLine("PKCS#1 unpad: i={0}, expected src[i]==[0,1,2], got src[i]={1}", i, src[i].ToString("X"));
+
                 return null;
             }
 
@@ -198,6 +217,8 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
                 if (++i >= src.Length)
                 {
                     Console.WriteLine("PKCS#1 unpad: i={0}, src[i-1]!=0 (={1})", i, src[i - 1].ToString("X"));
+
+                    return null;
                 }
             }
 
@@ -212,19 +233,12 @@ namespace HabboEncryption.Hurlant.Crypto.Rsa
 
         protected BigInteger DoPublic(BigInteger m)
         {
-            return m.modPow(this.E, this.N);
+            return BigInteger.ModPow(m, this.E, this.N);
         }
 
         protected BigInteger DoPrivate(BigInteger m)
         {
-            if (this.P == 0 && this.Q == 0)
-            {
-                return m.modPow(this.D, this.N);
-            }
-            else
-            {
-                return 0;
-            }
+            return BigInteger.ModPow(m, this.D, this.N);
         }
     }
 

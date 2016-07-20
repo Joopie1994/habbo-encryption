@@ -1,5 +1,4 @@
-﻿using HabboEncryption.CodeProject.Utils;
-using HabboEncryption.Crypto.KeyExchange;
+﻿using HabboEncryption.Crypto.KeyExchange;
 using HabboEncryption.Hurlant.Crypto.Rsa;
 using HabboEncryption.Keys;
 using HabboEncryption.Utils;
@@ -8,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
+using System.Globalization;
 
 namespace HabboEncryption
 {
@@ -16,10 +17,18 @@ namespace HabboEncryption
         public static RsaKey Rsa;
         public static DiffieHellman DiffieHellman;
 
-        public static void Initialize(RsaKeyHolder keys)
+        public static string RsaDiffieHellmanPrimeKey { get; private set; }
+        public static string RsaDiffieHellmanGeneratorKey { get; private set; }
+        public static string RsaDiffieHellmanPublicKey { get; private set; }
+
+        public static void Initialize(RsaKeyHolder rsaKeys, DiffieHellmanKeyHolder dhKeys)
         {
-            Rsa = RsaKey.ParsePrivateKey(keys.N, keys.E, keys.D);
-            DiffieHellman = new DiffieHellman();
+            Rsa = RsaKey.ParsePrivateKey(rsaKeys.N, rsaKeys.E, rsaKeys.D);
+            DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.Bits, dhKeys.P, dhKeys.G);
+
+            InitRsaDiffieHellmanPrimeKey();
+            InitRsaDiffieHellmanGeneratorKey();
+            InitRsaDiffieHellmanPublicKey();
         }
 
         private static string GetRsaStringEncrypted(string message)
@@ -37,22 +46,22 @@ namespace HabboEncryption
             }
         }
 
-        public static string GetRsaDiffieHellmanPrimeKey()
+        private static void InitRsaDiffieHellmanPrimeKey()
         {
-            string key = DiffieHellman.Prime.ToString(10);
-            return GetRsaStringEncrypted(key);
+            string key = DiffieHellman.Prime.ToString();
+            RsaDiffieHellmanPrimeKey = GetRsaStringEncrypted(key);
         }
 
-        public static string GetRsaDiffieHellmanGeneratorKey()
+        private static void InitRsaDiffieHellmanGeneratorKey()
         {
-            string key = DiffieHellman.Generator.ToString(10);
-            return GetRsaStringEncrypted(key);
+            string key = DiffieHellman.Generator.ToString();
+            RsaDiffieHellmanGeneratorKey = GetRsaStringEncrypted(key);
         }
 
-        public static string GetRsaDiffieHellmanPublicKey()
+        private static void InitRsaDiffieHellmanPublicKey()
         {
-            string key = DiffieHellman.PublicKey.ToString(10);
-            return GetRsaStringEncrypted(key);
+            string key = DiffieHellman.PublicKey.ToString();
+            RsaDiffieHellmanPublicKey = GetRsaStringEncrypted(key);
         }
 
         public static BigInteger CalculateDiffieHellmanSharedKey(string publicKey)
@@ -62,7 +71,7 @@ namespace HabboEncryption
                 byte[] cbytes = Converter.HexStringToBytes(publicKey);
                 byte[] publicKeyBytes = Rsa.Decrypt(cbytes);
                 string publicKeyString = Encoding.Default.GetString(publicKeyBytes);
-                return DiffieHellman.CalculateSharedKey(new BigInteger(publicKeyString, 10));
+                return DiffieHellman.CalculateSharedKey(BigInteger.Parse(publicKeyString));
             }
             catch
             {

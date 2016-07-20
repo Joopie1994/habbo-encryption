@@ -1,5 +1,4 @@
-﻿using HabboEncryption.CodeProject.Utils;
-using HabboEncryption.Crypto.KeyExchange;
+﻿using HabboEncryption.Crypto.KeyExchange;
 using HabboEncryption.Hurlant.Crypto.Prng;
 using HabboEncryption.Hurlant.Crypto.Rsa;
 using HabboEncryption.Keys;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace HabboEncryption
 {
@@ -46,11 +46,10 @@ namespace HabboEncryption
             }
         }
 
-        public HabboEncryptionHandlerV1(RsaKeyHolder keys)
+        public HabboEncryptionHandlerV1(RsaKeyHolder rsaKeys, DiffieHellmanKeyHolder dhKeys)
         {
-            this.DiffieHellman = new DiffieHellman();
-
-            this.Rsa = RsaKey.ParsePrivateKey(keys.N, keys.E, keys.D);
+            this.Rsa = RsaKey.ParsePrivateKey(rsaKeys.N, rsaKeys.E, rsaKeys.D);
+            this.DiffieHellman = DiffieHellman.ParsePublicKey(dhKeys.P, dhKeys.G);
 
             this.Rc4 = new ARC4();
 
@@ -65,9 +64,9 @@ namespace HabboEncryption
                 byte[] publicKeyBytes = this.Rsa.Decrypt(cbytes);
                 string publicKeyString = Encoding.Default.GetString(publicKeyBytes);
 
-                BigInteger sharedKey = this.DiffieHellman.CalculateSharedKey(new BigInteger(publicKeyString, 10));
+                BigInteger sharedKey = this.DiffieHellman.CalculateSharedKey(BigInteger.Parse(publicKeyString));
 
-                this.Rc4.Initialize(sharedKey.getBytes());
+                this.Rc4.Initialize(sharedKey.ToByteArray());
 
                 this.Initialized = true;
 
