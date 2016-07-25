@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HabboEncryption.Hurlant.Crypto.Prng
+namespace HabboEncryption.Security.Cryptography
 {
     public class ARC4
     {
         private int i;
         private int j;
         private byte[] bytes;
-        
-        public const int POOLSIZE = 256;
+
+        public const int POOLSIZE = byte.MaxValue + 1;
 
         public ARC4()
         {
@@ -60,17 +60,12 @@ namespace HabboEncryption.Hurlant.Crypto.Prng
             return this.bytes[(this.bytes[i] + this.bytes[j]) & 255];
         }
 
-        public void Encrypt (ref byte[] src)
+        public void Parse(ref byte[] src)
         {
             for (int k = 0; k < src.Length; k++)
             {
                 src[k] ^= this.Next();
             }
-        }
-
-        public void Decrypt(ref byte[] src)
-        {
-            this.Encrypt(ref src);
         }
     }
 }

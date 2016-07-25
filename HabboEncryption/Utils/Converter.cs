@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace HabboEncryption.Utils
 {
-    public class Converter
+    public static class Converter
     {
         public static string BytesToHexString(byte[] bytes)
         {
